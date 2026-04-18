@@ -11,7 +11,7 @@ $xprofile  = BBPPP_XProfile::instance();
 $user_id   = get_current_user_id();
 $user      = get_userdata( $user_id );
 $tabs      = $account->get_account_tabs();
-$current   = isset( $bbppp_tab ) ? $bbppp_tab : 'general';
+$current   = get_query_var( 'bbppp_tab' ) ?: 'general';
 $avatar_url = get_user_meta( $user_id, 'bbppp_avatar_url', true );
 if ( ! $avatar_url ) $avatar_url = get_avatar_url( $user_id, array( 'size' => 150 ) );
 $groups    = $xprofile->get_groups_with_fields();
