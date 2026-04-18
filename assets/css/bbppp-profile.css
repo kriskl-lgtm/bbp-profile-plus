@@ -1,0 +1,262 @@
+/* BBP Profile Plus - Profile & Account Styles
+   Mirrors BuddyPress user profile look & feel
+   ============================================ */
+
+/* ---- Wrap ---- */
+.bbppp-wrap { max-width: 960px; margin: 0 auto; font-family: inherit; }
+
+/* ---- Profile Header ---- */
+.bbppp-profile-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+  padding: 24px 0 20px;
+  border-bottom: 1px solid #e0e0e0;
+  margin-bottom: 20px;
+}
+.bbppp-avatar-wrap { position: relative; flex-shrink: 0; }
+.bbppp-avatar {
+  border-radius: 50%;
+  display: block;
+  object-fit: cover;
+  border: 3px solid #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,.2);
+}
+.bbppp-change-avatar {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  background: #0073aa;
+  color: #fff;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  font-size: 14px;
+}
+.bbppp-change-avatar:hover { background: #005a87; }
+.bbppp-profile-info { flex: 1; }
+.bbppp-display-name { margin: 0 0 4px; font-size: 1.6em; font-weight: 700; }
+.bbppp-username { color: #777; margin: 0 0 4px; }
+.bbppp-member-since { color: #aaa; font-size: .85em; margin: 0 0 12px; }
+
+/* ---- Profile Nav ---- */
+.bbppp-profile-nav {
+  border-bottom: 2px solid #e0e0e0;
+  margin-bottom: 24px;
+}
+.bbppp-profile-nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  gap: 0;
+}
+.bbppp-profile-nav li a {
+  display: block;
+  padding: 10px 18px;
+  text-decoration: none;
+  color: #555;
+  font-size: .93em;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+  transition: color .2s, border-color .2s;
+}
+.bbppp-profile-nav li.current a,
+.bbppp-profile-nav li a:hover {
+  color: #0073aa;
+  border-bottom-color: #0073aa;
+}
+
+/* ---- Profile Fields ---- */
+.bbppp-profile-group { margin-bottom: 28px; }
+.bbppp-group-title {
+  font-size: 1.1em;
+  font-weight: 600;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 6px;
+  margin-bottom: 12px;
+}
+.bbppp-profile-fields {
+  width: 100%;
+  border-collapse: collapse;
+}
+.bbppp-profile-fields tr { border-bottom: 1px solid #f0f0f0; }
+.bbppp-profile-fields tr:last-child { border-bottom: none; }
+.bbppp-field-label {
+  width: 35%;
+  padding: 8px 12px 8px 0;
+  font-weight: 600;
+  color: #444;
+  vertical-align: top;
+  font-size: .9em;
+}
+.bbppp-field-value {
+  padding: 8px 0;
+  color: #333;
+  vertical-align: top;
+}
+
+/* ---- Account Layout ---- */
+.bbppp-account-wrap {
+  display: flex;
+  gap: 0;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  overflow: hidden;
+  margin: 20px 0;
+}
+.bbppp-account-sidebar {
+  width: 220px;
+  flex-shrink: 0;
+  background: #f9f9f9;
+  border-right: 1px solid #e0e0e0;
+}
+.bbppp-account-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px;
+  border-bottom: 1px solid #e0e0e0;
+}
+.bbppp-account-user .bbppp-avatar { width: 40px; height: 40px; border-radius: 50%; }
+.bbppp-account-name { font-weight: 600; font-size: .9em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bbppp-account-nav ul { list-style: none; margin: 0; padding: 0; }
+.bbppp-account-nav li a {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  color: #555;
+  text-decoration: none;
+  font-size: .9em;
+  border-left: 3px solid transparent;
+  transition: background .15s, color .15s;
+}
+.bbppp-account-nav li.current a,
+.bbppp-account-nav li a:hover {
+  background: #fff;
+  color: #0073aa;
+  border-left-color: #0073aa;
+}
+.bbppp-account-nav .dashicons { font-size: 16px; width: 16px; height: 16px; }
+.bbppp-account-content { flex: 1; padding: 24px; min-width: 0; }
+.bbppp-account-content h2 { margin-top: 0; font-size: 1.2em; border-bottom: 1px solid #eee; padding-bottom: 8px; margin-bottom: 20px; }
+
+/* ---- Forms ---- */
+.bbppp-form { max-width: 560px; }
+.bbppp-form-row { margin-bottom: 18px; }
+.bbppp-form-row label { display: block; font-weight: 600; margin-bottom: 5px; font-size: .9em; color: #333; }
+.bbppp-form-row input[type="text"],
+.bbppp-form-row input[type="email"],
+.bbppp-form-row input[type="password"],
+.bbppp-form-row input[type="date"],
+.bbppp-form-row input[type="url"],
+.bbppp-form-row select,
+.bbppp-form-row textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  font-size: .93em;
+  color: #333;
+  background: #fff;
+  transition: border-color .15s;
+}
+.bbppp-form-row input:focus,
+.bbppp-form-row select:focus,
+.bbppp-form-row textarea:focus { border-color: #0073aa; outline: none; box-shadow: 0 0 0 2px rgba(0,115,170,.15); }
+.bbppp-form-row textarea { resize: vertical; min-height: 80px; }
+.bbppp-form-row-check label { display: flex; align-items: center; gap: 8px; font-weight: normal; cursor: pointer; }
+.bbppp-form-section { margin-bottom: 8px; }
+.bbppp-form-section-title { font-size: 1em; font-weight: 600; color: #555; margin: 20px 0 12px; padding-bottom: 4px; border-bottom: 1px dashed #e0e0e0; }
+.bbppp-form-submit { margin-top: 24px; }
+.required { color: #cc0000; margin-left: 2px; }
+
+/* ---- Avatar Edit ---- */
+.bbppp-avatar-edit { display: flex; align-items: center; gap: 16px; }
+.bbppp-avatar-edit .bbppp-avatar { width: 80px; height: 80px; border-radius: 50%; }
+.bbppp-avatar-actions { display: flex; flex-direction: column; gap: 8px; }
+
+/* ---- Buttons ---- */
+.bbppp-btn {
+  display: inline-block;
+  padding: 8px 16px;
+  border-radius: 3px;
+  font-size: .9em;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: background .15s, border-color .15s;
+  line-height: 1.4;
+}
+.bbppp-btn-primary { background: #0073aa; color: #fff; border-color: #0073aa; }
+.bbppp-btn-primary:hover { background: #005a87; border-color: #005a87; color: #fff; }
+.bbppp-btn-secondary { background: #f5f5f5; color: #333; border-color: #ccc; }
+.bbppp-btn-secondary:hover { background: #e8e8e8; color: #111; }
+.bbppp-btn-danger { background: #dc3232; color: #fff; border-color: #dc3232; }
+.bbppp-btn-danger:hover { background: #b22222; border-color: #b22222; color: #fff; }
+.bbppp-btn-sm { padding: 5px 10px; font-size: .8em; }
+
+/* ---- Notices ---- */
+.bbppp-notice {
+  padding: 10px 14px;
+  border-radius: 3px;
+  margin-bottom: 18px;
+  font-size: .9em;
+}
+.bbppp-notice.is-success { background: #ecf7ed; border-left: 4px solid #46b450; color: #1e4620; }
+.bbppp-notice.is-error   { background: #fbeaea; border-left: 4px solid #dc3232; color: #6d1818; }
+
+/* ---- Password Strength ---- */
+.bbppp-pass-strength {
+  margin-top: 6px;
+  height: 6px;
+  border-radius: 3px;
+  background: #eee;
+  overflow: hidden;
+}
+.bbppp-pass-strength span {
+  display: block;
+  height: 100%;
+  border-radius: 3px;
+  transition: width .3s, background .3s;
+}
+.bbppp-pass-strength.weak span   { width: 25%; background: #dc3232; }
+.bbppp-pass-strength.medium span { width: 60%; background: #ffb900; }
+.bbppp-pass-strength.strong span { width: 100%; background: #46b450; }
+
+/* ---- Danger Zone ---- */
+.bbppp-danger-zone {
+  background: #fff5f5;
+  border: 1px solid #fcc;
+  border-radius: 4px;
+  padding: 20px;
+}
+.bbppp-danger-desc { color: #c33; margin-top: 0; }
+
+/* ---- Checkbox/Radio groups ---- */
+.bbppp-checkbox-group label,
+.bbppp-radio-group label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+  font-weight: normal;
+  cursor: pointer;
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 640px) {
+  .bbppp-profile-header { flex-direction: column; }
+  .bbppp-account-wrap { flex-direction: column; }
+  .bbppp-account-sidebar { width: 100%; border-right: none; border-bottom: 1px solid #e0e0e0; }
+  .bbppp-profile-nav ul { flex-wrap: wrap; }
+  .bbppp-field-label { width: 100%; display: block; }
+  .bbppp-profile-fields td { display: block; width: 100%; }
+}
