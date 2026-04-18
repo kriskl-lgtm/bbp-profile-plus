@@ -77,7 +77,7 @@ class BBPPP_AntiSpam {
       default:
         $a = 3; $b = 4; $op = '+'; $answer = 7;
     }
-    $op_labels = array( '+' => '+', '-' => '\u2212', '*' => '\u00d7' );
+    		$op_labels = array( '+' => '+', '-' => '−', '*' => '×' );
     $question  = $a . ' ' . $op_labels[ $op ] . ' ' . $b;
 
     $token = wp_generate_password( 20, false );
@@ -107,6 +107,18 @@ class BBPPP_AntiSpam {
       </div>
       <?php /* 2. TIME GATE */ ?>
       <input type="hidden" name="bbppp_form_time" id="bbppp_form_time" value="" />
+
+				<?php /* Confirm Email Field */ ?>
+		<p class="bbppp-confirm-email-row">
+			<label for="bbppp_confirm_email"><?php esc_html_e( 'Confirm Email', 'bbp-profile-plus' ); ?> <span class="required">*</span></label>
+			<input type="email" 
+				id="bbppp_confirm_email" 
+				name="bbppp_confirm_email" 
+				value="" 
+				autocomplete="off" 
+				required 
+			/>
+		</p>
       <?php /* 3. MATH CAPTCHA */ ?>
       <p class="bbppp-captcha-row">
         <label for="bbppp_captcha_answer">
@@ -207,8 +219,7 @@ class BBPPP_AntiSpam {
 
   // =========================================================
   // WORDPRESS REGISTRATION VALIDATION
-  // =========================================================
-
+Fix CAPTCHA display & add Confirm Email field with validation
   /**
    * Hooked to registration_errors.
    * Runs spam checks AND validates username/email uniqueness.
@@ -238,6 +249,15 @@ class BBPPP_AntiSpam {
         __( '<strong>Error:</strong> That email address is already registered. Did you forget your password?', 'bbp-profile-plus' )
       );
     }
+
+	  		// ---- Email confirmation match ----
+		$confirm_email = isset( $_POST['bbppp_confirm_email'] ) ? trim( $_POST['bbppp_confirm_email'] ) : '';
+		if ( $user_email !== $confirm_email ) {
+			$errors->add(
+				'email_mismatch',
+				__( '<strong>Error:</strong> The email addresses do not match. Please check and try again.', 'bbp-profile-plus' )
+			);
+		}
 
     return $errors;
   }
