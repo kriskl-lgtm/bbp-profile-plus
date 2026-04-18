@@ -113,5 +113,8 @@ class BBPPP_XProfile {
             default:         return sanitize_text_field( $raw );
         }
     }
-}
+  public function get_field_by_id( $field_id ) {
+    global $wpdb;
+    return $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}bp_xprofile_fields WHERE id = %d LIMIT 1", $field_id ) );
+  }
 }
