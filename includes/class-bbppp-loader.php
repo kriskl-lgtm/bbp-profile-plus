@@ -10,10 +10,12 @@ final class BBPPP_Loader {
     require_once BBPPP_DIR . 'includes/class-bbppp-xprofile.php';
     require_once BBPPP_DIR . 'includes/class-bbppp-account.php';
     require_once BBPPP_DIR . 'includes/class-bbppp-router.php';
+    require_once BBPPP_DIR . 'includes/class-bbppp-antispam.php';
     // Boot singletons
     BBPPP_XProfile::instance();
     BBPPP_Account::instance();
     BBPPP_Router::instance();
+    BBPPP_AntiSpam::instance();
     // Enqueue assets
     add_action( 'wp_enqueue_scripts', array( __CLASS__, 'enqueue' ) );
   }
@@ -37,19 +39,18 @@ final class BBPPP_Loader {
     );
     $user_id = get_current_user_id();
     wp_localize_script( 'bbppp-profile', 'bbpppL10n', array(
-      'ajaxurl'            => admin_url( 'admin-ajax.php' ),
-      'homeUrl'            => home_url( '/' ),
-      'loginUrl'           => wp_login_url(),
-      'defaultAvatar'      => get_avatar_url( $user_id, array( 'size' => 150 ) ),
-      'saving'             => __( 'Saving...', 'bbp-profile-plus' ),
-      'save'               => __( 'Save Changes', 'bbp-profile-plus' ),
-      'error'              => __( 'An error occurred. Please try again.', 'bbp-profile-plus' ),
-      'confirmDelete'      => __( 'This will permanently delete your account. Are you absolutely sure?', 'bbp-profile-plus' ),
+      'ajaxurl'           => admin_url( 'admin-ajax.php' ),
+      'homeUrl'           => home_url( '/' ),
+      'loginUrl'          => wp_login_url(),
+      'defaultAvatar'     => get_avatar_url( $user_id, array( 'size' => 150 ) ),
+      'saving'            => __( 'Saving...', 'bbp-profile-plus' ),
+      'save'              => __( 'Save Changes', 'bbp-profile-plus' ),
+      'error'             => __( 'An error occurred. Please try again.', 'bbp-profile-plus' ),
+      'confirmDelete'     => __( 'This will permanently delete your account. Are you absolutely sure?', 'bbp-profile-plus' ),
       'confirmRemoveAvatar'=> __( 'Remove your profile photo?', 'bbp-profile-plus' ),
     ) );
   }
   public static function activate() {
-    // Flush rewrite rules on activation
     flush_rewrite_rules();
   }
   public static function deactivate() {
