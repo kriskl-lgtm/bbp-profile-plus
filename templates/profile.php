@@ -1,5 +1,5 @@
-<?php if ( ! defined( 'ABSPATH' ) ) exit; ?>
 <?php
+if ( ! defined( 'ABSPATH' ) ) exit;
 $xprofile   = BBPPP_XProfile::instance();
 $groups     = $xprofile->get_groups_with_fields();
 $profile_id = isset( $bbppp_user->ID ) ? $bbppp_user->ID : get_current_user_id();
@@ -7,7 +7,10 @@ $is_own     = ( get_current_user_id() === $profile_id );
 $avatar_url = get_user_meta( $profile_id, 'bbppp_avatar_url', true );
 if ( ! $avatar_url ) $avatar_url = get_avatar_url( $profile_id, array( 'size' => 150 ) );
 $user       = get_userdata( $profile_id );
+
+get_header();
 ?>
+<main id="bbppp-profile-main" class="bbppp-main">
 <div id="bbppp-profile" class="bbppp-wrap" data-user="<?php echo esc_attr( $profile_id ); ?>">
   <!-- Profile Header -->
   <div class="bbppp-profile-header">
@@ -29,9 +32,9 @@ $user       = get_userdata( $profile_id );
   <!-- Profile Nav -->
   <?php
   $nav_items = apply_filters( 'bbppp_profile_nav', array(
-    'profile' => array( 'label' => __( 'Profile', 'bbp-profile-plus' ), 'url' => bbppp_get_profile_url( $profile_id ) ),
-    'topics'  => array( 'label' => __( 'Forum Topics', 'bbp-profile-plus' ), 'url' => bbppp_get_profile_url( $profile_id, 'topics' ) ),
-    'replies' => array( 'label' => __( 'Replies', 'bbp-profile-plus' ), 'url' => bbppp_get_profile_url( $profile_id, 'replies' ) ),
+    'profile' => array( 'label' => __( 'Profile',       'bbp-profile-plus' ), 'url' => bbppp_get_profile_url( $profile_id ) ),
+    'topics'  => array( 'label' => __( 'Forum Topics',  'bbp-profile-plus' ), 'url' => bbppp_get_profile_url( $profile_id, 'topics' ) ),
+    'replies' => array( 'label' => __( 'Replies',       'bbp-profile-plus' ), 'url' => bbppp_get_profile_url( $profile_id, 'replies' ) ),
   ) );
   $current_tab = isset( $bbppp_tab ) ? $bbppp_tab : 'profile';
   ?>
@@ -54,8 +57,7 @@ $user       = get_userdata( $profile_id );
           <?php if ( empty( $group->fields ) ) continue; ?>
           <div class="bbppp-profile-group" id="bbppp-group-<?php echo esc_attr( $group->id ); ?>">
             <h2 class="bbppp-group-title"><?php echo esc_html( $group->name ); ?></h2>
-            <table class="bbppp-profile-fields">
-              <tbody>
+            <table class="bbppp-profile-fields"><tbody>
               <?php foreach ( $group->fields as $field ) : ?>
                 <?php
                 $value = $xprofile->get_value( $field->id, $profile_id );
@@ -75,17 +77,18 @@ $user       = get_userdata( $profile_id );
                   </td>
                 </tr>
               <?php endforeach; ?>
-              </tbody>
-            </table>
+            </tbody></table>
           </div>
         <?php endforeach; ?>
       <?php endif; ?>
     <?php elseif ( 'topics' === $current_tab ) : ?>
+      <h2><?php esc_html_e( 'Forum Topics', 'bbp-profile-plus' ); ?></h2>
       <?php bbppp_render_user_topics( $profile_id ); ?>
     <?php elseif ( 'replies' === $current_tab ) : ?>
+      <h2><?php esc_html_e( 'Replies', 'bbp-profile-plus' ); ?></h2>
       <?php bbppp_render_user_replies( $profile_id ); ?>
-    <?php else : ?>
-      <?php do_action( 'bbppp_profile_tab_content', $current_tab, $profile_id ); ?>
     <?php endif; ?>
   </div>
 </div>
+</main>
+<?php get_footer(); ?>
