@@ -132,6 +132,27 @@ class BBPPP_AntiSpam {
         <input type="hidden" name="bbppp_captcha_token" value="<?php echo esc_attr( $captcha['token'] ); ?>" />
       </p>
     </div>
+
+		<?php /* 4. XPROFILE FIELDS */ ?>
+		<?php
+		$xprofile = BBPPP_XProfile::instance();
+		$groups   = $xprofile->get_groups_with_fields();
+		if ( ! empty( $groups ) ) :
+			foreach ( $groups as $group ) :
+				if ( empty( $group->fields ) ) continue;
+				?>
+				<div class="bbppp-reg-group">
+					<h3 class="bbppp-reg-group-title"><?php echo esc_html( $group->name ); ?></h3>
+					<?php
+					foreach ( $group->fields as $field ) :
+						$xprofile->render_field( $field, '' );
+					endforeach;
+					?>
+				</div>
+				<?php
+			endforeach;
+		endif;
+		?>
     <?php
   }
 
