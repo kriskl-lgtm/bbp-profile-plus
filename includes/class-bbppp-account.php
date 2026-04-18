@@ -16,19 +16,57 @@ class BBPPP_Account {
   }
   public function get_account_tabs() {
     return apply_filters( 'bbppp_account_tabs', array(
-      'general'       => array( 'label' => __( 'General', 'bbp-profile-plus' ),       'icon' => 'dashicons-admin-generic' ),
-      'password'      => array( 'label' => __( 'Password', 'bbp-profile-plus' ),      'icon' => 'dashicons-lock' ),
-      'notifications' => array( 'label' => __( 'Notifications', 'bbp-profile-plus' ), 'icon' => 'dashicons-bell' ),
-      'delete'        => array( 'label' => __( 'Delete Account', 'bbp-profile-plus' ),'icon' => 'dashicons-trash' ),
+      'general'       => array( 'label' => __( 'General',        'bbp-profile-plus' ), 'icon' => 'dashicons-admin-generic' ),
+      'password'      => array( 'label' => __( 'Password',       'bbp-profile-plus' ), 'icon' => 'dashicons-lock' ),
+      'notifications' => array( 'label' => __( 'Notifications',  'bbp-profile-plus' ), 'icon' => 'dashicons-bell' ),
+      'delete'        => array( 'label' => __( 'Delete Account', 'bbp-profile-plus' ), 'icon' => 'dashicons-trash' ),
     ) );
   }
   public function ajax_save_account() {
     check_ajax_referer( 'bbppp_account_nonce', 'nonce' );
     if ( ! is_user_logged_in() ) wp_send_json_error( __( 'Not logged in.', 'bbp-profile-plus' ) );
-    $user_id = get_current_user_id();
-    $data    = array();
-    if ( ! empty( $_POST['first_name'] ) ) $data['first_name'] = sanitize_text_field( $_POST['first_name'] );
-    if ( ! empty( $_POST['last_name'] )  ) $data['last_name']  = sanitize_text_field( $_POST['last_name'] );
+    $user_id  = get_current_user_id();
+    $data     = array();
+    $xprofile = BBPPP_XProfile::instance();
+
+    // --- Validate required xProfile fields BEFORE saving anything ---
+    $all_fields    = $xprofile->get_all_fields();
+    $missing_names = array();
+    foreach ( $all_fields as $field ) {
+      if ( empty( $field->is_required ) ) continue; // skip non-required
+      $field_id = (int) $field->id;
+      // Value may come from POST or already stored in DB
+      $posted = isset( $_POST['xprofile'][ $field_id ] ) ? $_POST['xprofile'][ $field_id ] : null;
+      if ( $posted === null ) {
+        // Field not submitted at all - treat as empty
+        $missing_names[] = esc_html( $field->name );
+        continue;
+      }
+      // Determine if the submitted value is truly empty
+      $is_empty = false;
+      if ( is_array( $posted ) ) {
+        $filtered = array_filter( array_map( 'trim', $posted ) );
+        $is_empty = empty( $filtered );
+      } else {
+        $is_empty = ( trim( (string) $posted ) === '' );
+      }
+      if ( $is_empty ) {
+        $missing_names[] = esc_html( $field->name );
+      }
+    }
+    if ( ! empty( $missing_names ) ) {
+      wp_send_json_error(
+        sprintf(
+          /* translators: %s = comma-separated list of field names */
+          __( 'The following required fields are empty: %s', 'bbp-profile-plus' ),
+          implode( ', ', $missing_names )
+        )
+      );
+    }
+
+    // --- Standard WP user fields ---
+    if ( ! empty( $_POST['first_name'] ) ) $data['first_name']  = sanitize_text_field( $_POST['first_name'] );
+    if ( ! empty( $_POST['last_name'] ) )  $data['last_name']   = sanitize_text_field( $_POST['last_name'] );
     if ( ! empty( $_POST['user_email'] ) ) {
       $email = sanitize_email( $_POST['user_email'] );
       if ( ! is_email( $email ) ) wp_send_json_error( __( 'Invalid email address.', 'bbp-profile-plus' ) );
@@ -40,8 +78,8 @@ class BBPPP_Account {
     $data['ID'] = $user_id;
     $result = wp_update_user( $data );
     if ( is_wp_error( $result ) ) wp_send_json_error( $result->get_error_message() );
-    // Save xProfile fields if present
-    $xprofile = BBPPP_XProfile::instance();
+
+    // --- Save xProfile fields ---
     if ( ! empty( $_POST['xprofile'] ) && is_array( $_POST['xprofile'] ) ) {
       foreach ( $_POST['xprofile'] as $field_id => $value ) {
         $field = $xprofile->get_field_by_id( (int) $field_id );
@@ -58,8 +96,8 @@ class BBPPP_Account {
     if ( ! is_user_logged_in() ) wp_send_json_error( __( 'Not logged in.', 'bbp-profile-plus' ) );
     $user_id  = get_current_user_id();
     $current  = isset( $_POST['current_password'] )  ? $_POST['current_password']  : '';
-    $new_pass = isset( $_POST['new_password'] )       ? $_POST['new_password']       : '';
-    $confirm  = isset( $_POST['confirm_password'] )   ? $_POST['confirm_password']   : '';
+    $new_pass = isset( $_POST['new_password'] )      ? $_POST['new_password']      : '';
+    $confirm  = isset( $_POST['confirm_password'] )  ? $_POST['confirm_password']  : '';
     if ( empty( $current ) || empty( $new_pass ) || empty( $confirm ) ) wp_send_json_error( __( 'All fields required.', 'bbp-profile-plus' ) );
     if ( $new_pass !== $confirm ) wp_send_json_error( __( 'Passwords do not match.', 'bbp-profile-plus' ) );
     if ( strlen( $new_pass ) < 8 ) wp_send_json_error( __( 'Password must be at least 8 characters.', 'bbp-profile-plus' ) );
@@ -71,9 +109,9 @@ class BBPPP_Account {
   public function ajax_save_notifications() {
     check_ajax_referer( 'bbppp_account_nonce', 'nonce' );
     if ( ! is_user_logged_in() ) wp_send_json_error( __( 'Not logged in.', 'bbp-profile-plus' ) );
-    $user_id = get_current_user_id();
+    $user_id        = get_current_user_id();
     $notify_replies = isset( $_POST['notify_replies'] ) ? 1 : 0;
-    $notify_topics  = isset( $_POST['notify_topics']  ) ? 1 : 0;
+    $notify_topics  = isset( $_POST['notify_topics'] )  ? 1 : 0;
     update_user_meta( $user_id, 'bbppp_notify_replies', $notify_replies );
     update_user_meta( $user_id, 'bbppp_notify_topics',  $notify_topics );
     do_action( 'bbppp_save_notifications', $user_id, $_POST );
@@ -117,7 +155,7 @@ class BBPPP_Account {
     check_ajax_referer( 'bbppp_account_nonce', 'nonce' );
     if ( ! is_user_logged_in() ) wp_send_json_error( __( 'Not logged in.', 'bbp-profile-plus' ) );
     $user_id = get_current_user_id();
-    $url = get_user_meta( $user_id, 'bbppp_avatar_url', true );
+    $url     = get_user_meta( $user_id, 'bbppp_avatar_url', true );
     if ( $url ) {
       $path = str_replace( wp_upload_dir()['baseurl'], wp_upload_dir()['basedir'], $url );
       if ( file_exists( $path ) ) @unlink( $path );
