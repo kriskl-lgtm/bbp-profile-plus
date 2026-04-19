@@ -17,8 +17,25 @@ final class BBPPP_Loader {
     BBPPP_Router::instance();
     BBPPP_AntiSpam::instance();
     // Enqueue assets
-    add_action( 'wp_enqueue_scripts', array( __CLASS__, 'enqueue' ) );
+    add_action( 'wp_enqueue_scripts', array( __CLASS__, 'enqueue' ) )
+      		add_action( 'login_enqueue_scripts', array( __CLASS__, 'enqueue_login' ) );;
   }
+
+  	public static function enqueue_login() {
+		wp_enqueue_style(
+			'bbppp-profile-login',
+			BBPPP_ASSETS_URL . 'css/bbppp-profile-login.css',
+			array(),
+			BBPPP_VERSION
+		);
+		wp_enqueue_script(
+			'bbppp-profile-login',
+			BBPPP_ASSETS_URL . 'js/bbppp-profile-login.js',
+			array( 'jquery' ),
+			BBPPP_VERSION,
+			true
+		);
+	}
   public static function load_textdomain() {
     load_plugin_textdomain( 'bbp-profile-plus', false, dirname( plugin_basename( BBPPP_FILE ) ) . '/languages' );
   }
