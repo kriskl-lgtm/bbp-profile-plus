@@ -13,6 +13,9 @@
 
   /* ---- Generic AJAX form submit ---- */
   function bindForm($form) {
+    /* Disable native HTML5 validation - we validate server-side via AJAX */
+    $form.attr('novalidate', 'novalidate');
+
     $form.on('submit', function(e) {
       e.preventDefault();
       var action = $form.data('action');
@@ -107,6 +110,7 @@
   $(document).ready(function() {
     $wrap = $('#bbppp-account');
     if (!$wrap.length) return;
+
     nonce = $wrap.data('nonce');
 
     // Bind all forms
@@ -124,7 +128,7 @@
       var $bar = $('#bbppp-pass-strength');
       if (!val) { $bar.html('').removeClass('weak medium strong'); return; }
       var level = passwordStrength(val);
-      $bar.html('<span></span>').removeClass('weak medium strong').addClass(level);
+      $bar.html('').removeClass('weak medium strong').addClass(level);
     });
 
     initAvatarUpload();
