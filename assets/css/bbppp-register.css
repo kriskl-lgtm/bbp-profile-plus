@@ -1,8 +1,8 @@
-/* BBP Profile Plus - Registration Form Styles */
+/* BBP Profile Plus - Registration Form Styles (2-column BuddyPress-like) */
 
 /* ---- Layout ---- */
 .bbppp-register-wrap {
-  max-width: 680px;
+  max-width: 1100px;
   margin: 40px auto;
   padding: 0 20px;
 }
@@ -23,6 +23,25 @@
   font-size: 15px;
   color: #666;
   margin: 0;
+}
+
+/* ---- Two-Column Grid ---- */
+.bbppp-register-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.bbppp-register-col-left,
+.bbppp-register-col-right {
+  min-width: 0;
+}
+
+@media (max-width: 860px) {
+  .bbppp-register-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* ---- Form Sections ---- */
@@ -48,223 +67,182 @@
 
 .bbppp-form-section-title .dashicons {
   color: #2271b1;
-  font-size: 20px;
-  width: 20px;
-  height: 20px;
 }
 
-.bbppp-section-desc {
-  color: #666;
-  font-size: 13px;
-  margin: -10px 0 16px;
+/* ---- Fields ---- */
+.bbppp-field {
+  margin-bottom: 16px;
 }
 
-/* ---- Form Rows ---- */
-.bbppp-form-row {
-  margin-bottom: 18px;
-}
-
-.bbppp-form-row:last-child {
+.bbppp-field:last-child {
   margin-bottom: 0;
 }
 
-.bbppp-form-row label {
+.bbppp-label {
   display: block;
   font-weight: 600;
-  font-size: 14px;
   margin-bottom: 6px;
+  font-size: 14px;
   color: #1d2327;
 }
 
-.bbppp-req {
+.bbppp-required {
   color: #d63638;
-  font-weight: bold;
+  margin-left: 2px;
 }
 
-.bbppp-field-desc {
-  font-size: 12px;
-  color: #888;
-  margin: 4px 0 0;
-}
-
-/* ---- Inputs ---- */
-.bbppp-input {
+.bbppp-input,
+.bbppp-textarea,
+.bbppp-select {
   width: 100%;
-  padding: 10px 14px;
-  font-size: 15px;
+  padding: 10px 12px;
   border: 1px solid #c3c4c7;
   border-radius: 4px;
+  font-size: 14px;
   background: #fff;
-  color: #1d2327;
-  transition: border-color 0.15s, box-shadow 0.15s;
   box-sizing: border-box;
+  transition: border-color .15s, box-shadow .15s;
 }
 
-.bbppp-input:focus {
-  border-color: #2271b1;
-  box-shadow: 0 0 0 1px #2271b1;
+.bbppp-input:focus,
+.bbppp-textarea:focus,
+.bbppp-select:focus {
   outline: none;
-}
-
-.bbppp-input.bbppp-input-error {
-  border-color: #d63638;
-  box-shadow: 0 0 0 1px #d63638;
-}
-
-.bbppp-input-short {
-  max-width: 120px;
+  border-color: #2271b1;
+  box-shadow: 0 0 0 2px rgba(34,113,177,.2);
 }
 
 .bbppp-textarea {
-  min-height: 80px;
+  min-height: 90px;
   resize: vertical;
 }
 
-.bbppp-select {
-  appearance: auto;
+.bbppp-field-description {
+  font-size: 12px;
+  color: #777;
+  margin-top: 4px;
 }
 
-/* ---- Radio & Checkbox ---- */
+/* ---- Field rows (two inputs side-by-side, no grey divider) ---- */
+.bbppp-field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.bbppp-field-row .bbppp-field {
+  margin-bottom: 0;
+}
+
+@media (max-width: 520px) {
+  .bbppp-field-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---- Radio / Checkbox groups ---- */
 .bbppp-radio-group,
 .bbppp-checkbox-group {
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px 20px;
-  margin-top: 4px;
+  flex-direction: column;
+  gap: 6px;
 }
 
 .bbppp-radio-label,
 .bbppp-checkbox-label {
-  font-weight: normal;
-  font-size: 14px;
-  cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 8px;
+  font-size: 14px;
+  cursor: pointer;
 }
 
-/* ---- Password Strength Meter ---- */
-.bbppp-password-meter {
-  height: 4px;
-  border-radius: 2px;
-  margin-top: 6px;
-  transition: all 0.3s;
-  background: #ddd;
-}
-
-.bbppp-password-meter.strength-weak {
-  background: #d63638;
-  width: 33%;
-}
-
-.bbppp-password-meter.strength-medium {
-  background: #dba617;
-  width: 66%;
-}
-
-.bbppp-password-meter.strength-strong {
-  background: #00a32a;
-  width: 100%;
-}
-
-/* ---- Submit Button ---- */
+/* ---- Submit ---- */
 .bbppp-form-submit {
-  margin-top: 24px;
   text-align: center;
+  margin-top: 20px;
 }
 
 .bbppp-btn {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
-  padding: 12px 32px;
-  font-size: 16px;
+  padding: 12px 28px;
+  font-size: 15px;
   font-weight: 600;
-  border: none;
-  border-radius: 6px;
+  border-radius: 4px;
+  border: 1px solid transparent;
   cursor: pointer;
-  transition: background 0.2s, transform 0.1s;
-}
-
-.bbppp-btn:active {
-  transform: scale(0.98);
+  text-decoration: none;
+  transition: background .15s, border-color .15s;
 }
 
 .bbppp-btn-primary {
   background: #2271b1;
   color: #fff;
+  border-color: #2271b1;
 }
 
 .bbppp-btn-primary:hover {
   background: #135e96;
+  border-color: #135e96;
 }
 
-.bbppp-btn-primary:disabled {
-  background: #a7aaad;
+.bbppp-btn[disabled] {
+  opacity: .6;
   cursor: not-allowed;
 }
 
-.bbppp-btn .dashicons {
-  font-size: 18px;
-  width: 18px;
-  height: 18px;
-}
-
-/* ---- Messages ---- */
+/* ---- Notices ---- */
 .bbppp-notice {
-  padding: 14px 18px;
-  border-radius: 6px;
+  padding: 12px 16px;
+  border-radius: 4px;
   margin-bottom: 20px;
   font-size: 14px;
-  line-height: 1.5;
-}
-
-.bbppp-notice.is-success {
-  background: #edfaef;
-  border: 1px solid #00a32a;
-  color: #00662a;
-}
-
-.bbppp-notice.is-error {
-  background: #fef1f1;
-  border: 1px solid #d63638;
-  color: #8a1114;
 }
 
 .bbppp-notice-error {
-  background: #fef1f1;
-  border: 1px solid #d63638;
-  color: #8a1114;
+  background: #fcf0f1;
+  border-left: 4px solid #d63638;
+  color: #8a1f22;
+}
+
+.bbppp-notice-success {
+  background: #edf7ed;
+  border-left: 4px solid #00a32a;
+  color: #1e4620;
 }
 
 /* ---- Footer ---- */
 .bbppp-register-footer {
   text-align: center;
-  margin-top: 20px;
-  padding-top: 16px;
-  border-top: 1px solid #eee;
+  margin-top: 24px;
+  font-size: 14px;
+  color: #666;
 }
 
 .bbppp-register-footer a {
   color: #2271b1;
-  font-weight: 600;
   text-decoration: none;
 }
 
 .bbppp-register-footer a:hover {
-  color: #135e96;
   text-decoration: underline;
 }
 
-/* ---- Responsive ---- */
-@media (max-width: 600px) {
-  .bbppp-register-wrap {
-    margin: 20px auto;
-  }
-  .bbppp-form-section {
-    padding: 16px 18px;
-  }
-  .bbppp-register-header h1 {
-    font-size: 22px;
-  }
+/* ---- Captcha ---- */
+.bbppp-captcha {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.bbppp-captcha-question {
+  font-weight: 600;
+  background: #f6f7f7;
+  padding: 10px 12px;
+  border-radius: 4px;
+  border: 1px solid #dcdcde;
 }
