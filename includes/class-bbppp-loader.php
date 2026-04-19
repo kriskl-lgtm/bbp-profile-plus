@@ -18,7 +18,7 @@ final class BBPPP_Loader {
     BBPPP_AntiSpam::instance();
     // Enqueue assets
     add_action( 'wp_enqueue_scripts', array( __CLASS__, 'enqueue' ) )
-      		add_action( 'login_enqueue_scripts', array( __CLASS__, 'enqueue_login' ) );;
+      		add_action( 'login_enqueue_scripts', array( __CLASS__, 'enqueue_login' ) ;;
   }
 
   	public static function enqueue_login() {
