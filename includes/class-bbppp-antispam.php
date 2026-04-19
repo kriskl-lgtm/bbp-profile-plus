@@ -219,11 +219,6 @@ class BBPPP_AntiSpam {
 
   // =========================================================
   // WORDPRESS REGISTRATION VALIDATION
-Fix CAPTCHA display & add Confirm Email field with validation
-  /**
-   * Hooked to registration_errors.
-   * Runs spam checks AND validates username/email uniqueness.
-   */
   public function validate_registration( $errors, $sanitized_user_login, $user_email ) {
 
     // --- Spam checks ---
