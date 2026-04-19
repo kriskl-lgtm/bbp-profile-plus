@@ -20,3 +20,13 @@ require_once BBPPP_DIR . 'includes/class-bbppp-loader.php';
 register_activation_hook( __FILE__,   array( 'BBPPP_Loader', 'activate' ) );
 register_deactivation_hook( __FILE__, array( 'BBPPP_Loader', 'deactivate' ) );
 BBPPP_Loader::init();
+
+// Fix broken registration URLs
+add_filter( 'register_url', 'bbppp_fix_register_url' );
+function bbppp_fix_register_url( $url ) {
+	// If the URL points to a non-existent page, redirect to WordPress default registration
+	if ( strpos( $url, '?p=' ) !== false || strpos( $url, 'create-your-account' ) !== false ) {
+		return wp_registration_url();
+	}
+	return $url;
+}
