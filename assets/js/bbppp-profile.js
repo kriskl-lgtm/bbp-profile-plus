@@ -6,14 +6,19 @@
 
   function showMsg(msg, type) {
     var $m = $('#bbppp-account-msg');
+    if (!$m.length) {
+      $m = $('<div id="bbppp-account-msg" class="bbppp-notice"></div>');
+      $wrap.find('.bbppp-account-content').prepend($m);
+    }
     $m.removeClass('is-success is-error').addClass(type === 'success' ? 'is-success' : 'is-error').html(msg).show();
-    $('html, body').animate({ scrollTop: $m.offset().top - 80 }, 300);
+    if ($m.is(':visible') && $m.offset()) {
+      $('html, body').animate({ scrollTop: $m.offset().top - 80 }, 300);
+    }
     setTimeout(function() { $m.fadeOut(); }, 5000);
   }
 
   /* ---- Generic AJAX form submit ---- */
   function bindForm($form) {
-    /* Disable native HTML5 validation - we validate server-side via AJAX */
     $form.attr('novalidate', 'novalidate');
 
     $form.on('submit', function(e) {
@@ -66,7 +71,6 @@
       formData.append('action', 'bbppp_upload_avatar');
       formData.append('nonce', nonce);
       formData.append('avatar', file);
-      // Preview
       var reader = new FileReader();
       reader.onload = function(ev) { $('#bbppp-avatar-preview').attr('src', ev.target.result); };
       reader.readAsDataURL(file);
@@ -113,7 +117,6 @@
 
     nonce = $wrap.data('nonce');
 
-    // Bind all forms
     $wrap.find('.bbppp-form').each(function() {
       var $form = $(this);
       $form.find('[type="submit"]').each(function() {
@@ -122,7 +125,6 @@
       bindForm($form);
     });
 
-    // Password strength
     $('#bbppp-new-pass').on('input', function() {
       var val = $(this).val();
       var $bar = $('#bbppp-pass-strength');
