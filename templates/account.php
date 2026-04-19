@@ -65,10 +65,6 @@ get_header();
                     <input type="text" id="bbppp-first-name" name="first_name" value="<?php echo esc_attr( $user->first_name ); ?>">
                 </div>
                 <div class="bbppp-form-row">
-                    <label for="bbppp-last-name"><?php esc_html_e( 'Last Name', 'bbp-profile-plus' ); ?></label>
-                    <input type="text" id="bbppp-last-name" name="last_name" value="<?php echo esc_attr( $user->last_name ); ?>">
-                </div>
-                <div class="bbppp-form-row">
                     <label for="bbppp-display-name"><?php esc_html_e( 'Display Name', 'bbp-profile-plus' ); ?></label>
                     <input type="text" id="bbppp-display-name" name="display_name" value="<?php echo esc_attr( $user->display_name ); ?>">
                 </div>
