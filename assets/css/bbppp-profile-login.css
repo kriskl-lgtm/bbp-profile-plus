@@ -3,11 +3,11 @@
  * Custom styling for WordPress login/registration pages
  */
 
-/* Login Form Container */
+/* Login Form Container 
 .login {
 	background: #f5f5f5;
 }
-
+*/
 #login {
 	width: 400px;
 	padding: 8% 0 0;
