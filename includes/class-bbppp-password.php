@@ -4,8 +4,12 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 /**
  * BBPPP_Password
  *
- * Adds a user-chosen password (with confirmation) to the registration form
- * instead of auto-generating one. Integrated into the core plugin.
+ * - Adds a user-chosen password (with confirmation) to the WP registration form.
+ * - Positions password fields directly under the username via inline JS reordering.
+ * - Forces the anti-spam captcha to the bottom of the form (after xProfile).
+ * - Normalises the confirm-email field width to match the email field.
+ * - Feeds the chosen password into $_POST['user_pass'] so BBPPP_Activation
+ *   creates the pending user with the correct password.
  */
 final class BBPPP_Password {
 
@@ -19,35 +23,45 @@ final class BBPPP_Password {
     }
 
     private function __construct() {
-        add_action( 'register_form',        array( $this, 'render_fields' ), 99 );
-        add_filter( 'registration_errors',  array( $this, 'validate' ), 20, 3 );
-        add_action( 'register_post',        array( $this, 'capture_password' ), 99, 3 );
-        add_action( 'added_option',         array( $this, 'on_added_option' ), 10, 2 );
-        add_action( 'updated_option',       array( $this, 'on_updated_option' ), 10, 3 );
-        add_action( 'user_register',        array( $this, 'apply_chosen_password' ), 5, 1 );
+        // Render the password fields. Priority 1 = earliest on register_form,
+        // combined with JS reordering, ensures they sit just below the username.
+        add_action( 'register_form',       array( $this, 'render_fields' ), 1 );
+
+        // Validate + inject into $_POST['user_pass'] before activation runs.
+        add_filter( 'registration_errors', array( $this, 'validate' ), 20, 3 );
+
+        // Inline JS + CSS on wp-login.php to:
+        //  (a) move password block right after #user_login field
+        //  (b) move captcha block to the bottom
+        //  (c) match confirm-email width to the email input
+        add_action( 'login_enqueue_scripts', array( $this, 'login_assets' ) );
     }
 
     /**
-     * Render password + confirm password fields on the WP registration form.
+     * Render password + confirm password fields.
+     * Wrapped in an identifiable container so JS can relocate it.
      */
     public function render_fields() {
         ?>
-        <p>
-            <label for="bbppp_pass1"><?php esc_html_e( 'Password', 'bbp-profile-plus' ); ?><br/>
-                <input type="password" name="bbppp_pass1" id="bbppp_pass1" class="input" autocomplete="new-password" spellcheck="false" required minlength="8" size="25" />
-            </label>
-        </p>
-        <p>
-            <label for="bbppp_pass2"><?php esc_html_e( 'Confirm password', 'bbp-profile-plus' ); ?><br/>
-                <input type="password" name="bbppp_pass2" id="bbppp_pass2" class="input" autocomplete="new-password" spellcheck="false" required minlength="8" size="25" />
-            </label>
-        </p>
-        <p class="description"><?php esc_html_e( 'Choose a password of at least 8 characters. You will use this password to log in once your account is activated.', 'bbp-profile-plus' ); ?></p>
+        <div id="bbppp-password-block" class="bbppp-password-block">
+            <p>
+                <label for="bbppp_pass1"><?php esc_html_e( 'Password', 'bbp-profile-plus' ); ?><br/>
+                    <input type="password" name="bbppp_pass1" id="bbppp_pass1" class="input" autocomplete="new-password" spellcheck="false" required minlength="8" size="25" />
+                </label>
+            </p>
+            <p>
+                <label for="bbppp_pass2"><?php esc_html_e( 'Confirm password', 'bbp-profile-plus' ); ?><br/>
+                    <input type="password" name="bbppp_pass2" id="bbppp_pass2" class="input" autocomplete="new-password" spellcheck="false" required minlength="8" size="25" />
+                </label>
+            </p>
+            <p class="description" style="font-size:11px;color:#666;"><?php esc_html_e( 'Choose a password of at least 8 characters. You will use this password to log in once your account is activated.', 'bbp-profile-plus' ); ?></p>
+        </div>
         <?php
     }
 
     /**
-     * Validate password fields during registration.
+     * Validate the password and inject it into $_POST['user_pass'] so the
+     * downstream activation class picks it up when creating the pending user.
      */
     public function validate( $errors, $sanitized_user_login, $user_email ) {
         $pass1 = isset( $_POST['bbppp_pass1'] ) ? (string) $_POST['bbppp_pass1'] : '';
@@ -63,84 +77,101 @@ final class BBPPP_Password {
         if ( $pass1 !== $pass2 ) {
             $errors->add( 'bbppp_pass_mismatch', __( '<strong>Error:</strong> The two passwords do not match.', 'bbp-profile-plus' ) );
         }
+
+        // If no password errors, hand the plaintext off to the activation flow.
+        if ( ! $errors->get_error_messages( 'bbppp_pass_empty' ) &&
+             ! $errors->get_error_messages( 'bbppp_pass_short' ) &&
+             ! $errors->get_error_messages( 'bbppp_pass_mismatch' ) ) {
+            $_POST['user_pass'] = $pass1;
+        }
+
         return $errors;
     }
 
     /**
-     * Stash the chosen password (hashed) in a short-lived transient keyed by login+email.
+     * Inline CSS + JS on wp-login.php (registration view) to:
+     *   - move the password block right after username
+     *   - move the captcha block to the bottom of the form
+     *   - stretch the confirm-email input to full width (like #user_email)
      */
-    public function capture_password( $sanitized_user_login, $user_email, $errors ) {
-        if ( $errors->has_errors() ) return;
-        $pass1 = isset( $_POST['bbppp_pass1'] ) ? (string) $_POST['bbppp_pass1'] : '';
-        if ( '' === $pass1 ) return;
-        set_transient(
-            'bbppp_pwd_' . md5( $sanitized_user_login . '|' . $user_email ),
-            wp_hash_password( $pass1 ),
-            HOUR_IN_SECONDS
-        );
-    }
+    public function login_assets() {
+        // Only act on the register view.
+        $action = isset( $_GET['action'] ) ? $_GET['action'] : '';
+        if ( 'register' !== $action ) return;
 
-    public function on_added_option( $option, $value ) {
-        if ( 'bbppp_pending_activations' !== $option ) return;
-        $this->merge_into_pending( $value );
-    }
+        $css = '
+            #bbppp-password-block input[type="password"] { width: 100%; font-size: 24px; padding: 3px; margin: 2px 6px 16px 0; }
+            #bbppp-password-block label { display:block; }
+            .bbppp-confirm-email input[type="email"],
+            .bbppp-confirm-email input[type="text"] { width: 100%; font-size: 24px; padding: 3px; margin: 2px 6px 16px 0; }
+            .bbppp-captcha-block { margin-top: 14px; }
+        ';
+        wp_register_style( 'bbppp-register-layout', false );
+        wp_enqueue_style( 'bbppp-register-layout' );
+        wp_add_inline_style( 'bbppp-register-layout', $css );
 
-    public function on_updated_option( $option, $old_value, $value ) {
-        if ( 'bbppp_pending_activations' !== $option ) return;
-        $this->merge_into_pending( $value );
-    }
+        $js = <<<JS
+(function(){
+    function ready(fn){ if(document.readyState!="loading"){fn();} else {document.addEventListener("DOMContentLoaded",fn);} }
+    ready(function(){
+        var form = document.getElementById("registerform");
+        if (!form) return;
 
-    /**
-     * Merge the stashed hashed password into the pending activations option.
-     */
-    private function merge_into_pending( $value ) {
-        if ( ! is_array( $value ) ) return;
-        $changed = false;
-        foreach ( $value as $key => $entry ) {
-            if ( ! is_array( $entry ) ) continue;
-            if ( ! empty( $entry['bbppp_hashed_pass'] ) ) continue;
-            $login = isset( $entry['user_login'] ) ? $entry['user_login'] : '';
-            $email = isset( $entry['user_email'] ) ? $entry['user_email'] : '';
-            if ( '' === $login || '' === $email ) continue;
-            $tkey   = 'bbppp_pwd_' . md5( $login . '|' . $email );
-            $hashed = get_transient( $tkey );
-            if ( $hashed ) {
-                $value[ $key ]['bbppp_hashed_pass'] = $hashed;
-                delete_transient( $tkey );
-                $changed = true;
+        // 1) Move password block to directly after the username field's <p>.
+        var pwBlock = document.getElementById("bbppp-password-block");
+        var userLogin = document.getElementById("user_login");
+        if (pwBlock && userLogin) {
+            var userP = userLogin.closest("p");
+            if (userP && userP.parentNode === form) {
+                form.insertBefore(pwBlock, userP.nextSibling);
             }
         }
-        if ( $changed ) {
-            remove_action( 'updated_option', array( $this, 'on_updated_option' ), 10 );
-            remove_action( 'added_option',   array( $this, 'on_added_option' ), 10 );
-            update_option( 'bbppp_pending_activations', $value, false );
-            add_action( 'updated_option', array( $this, 'on_updated_option' ), 10, 3 );
-            add_action( 'added_option',   array( $this, 'on_added_option' ), 10, 2 );
-        }
-    }
 
-    /**
-     * When the user is actually created (after clicking the activation link),
-     * replace the auto-generated password with the one they chose.
-     */
-    public function apply_chosen_password( $user_id ) {
-        $user = get_userdata( $user_id );
-        if ( ! $user ) return;
-        $pending = get_option( 'bbppp_pending_activations', array() );
-        if ( ! is_array( $pending ) || empty( $pending ) ) return;
-        foreach ( $pending as $entry ) {
-            if ( ! is_array( $entry ) ) continue;
-            if ( empty( $entry['bbppp_hashed_pass'] ) ) continue;
-            $login = isset( $entry['user_login'] ) ? $entry['user_login'] : '';
-            $email = isset( $entry['user_email'] ) ? $entry['user_email'] : '';
-            if ( $login === $user->user_login || $email === $user->user_email ) {
-                global $wpdb;
-                $wpdb->update( $wpdb->users, array( 'user_pass' => $entry['bbppp_hashed_pass'] ), array( 'ID' => $user_id ) );
-                clean_user_cache( $user_id );
-                wp_cache_delete( $user_id, 'users' );
-                wp_cache_delete( $user->user_login, 'userlogins' );
-                return;
+        // 2) Match the confirm-email field's width/styling to the email input.
+        //    We detect the confirm-email field by common name/id patterns.
+        var emailField = document.getElementById("user_email");
+        var candidates = form.querySelectorAll('input[name*="confirm"], input[id*="confirm"], input[name*="email_confirm"], input[name="bbppp_confirm_email"]');
+        candidates.forEach(function(inp){
+            if (!inp) return;
+            if (emailField) {
+                inp.style.width = window.getComputedStyle(emailField).width;
+                inp.style.fontSize = window.getComputedStyle(emailField).fontSize;
+                inp.style.padding = window.getComputedStyle(emailField).padding;
+            } else {
+                inp.style.width = "100%";
             }
-        }
+            var wrap = inp.closest("p") || inp.parentNode;
+            if (wrap) wrap.classList.add("bbppp-confirm-email");
+        });
+
+        // 3) Move the captcha block (and honeypot/time gate wrappers) to the end.
+        //    Detect by common BBPPP anti-spam markers.
+        var captchaSelectors = [
+            "#bbppp_captcha", "[name=bbppp_captcha]",
+            "[name=bbppp_hp]", "[name=bbppp_ts]", "[name=bbppp_token]"
+        ];
+        var handled = new Set();
+        captchaSelectors.forEach(function(sel){
+            form.querySelectorAll(sel).forEach(function(el){
+                var wrap = el.closest("p") || el.parentNode;
+                if (!wrap || handled.has(wrap)) return;
+                handled.add(wrap);
+                wrap.classList.add("bbppp-captcha-block");
+                // Move just before the submit row.
+                var submit = form.querySelector("#wp-submit");
+                var submitP = submit ? submit.closest("p") : null;
+                if (submitP && submitP.parentNode === form) {
+                    form.insertBefore(wrap, submitP);
+                } else {
+                    form.appendChild(wrap);
+                }
+            });
+        });
+    });
+})();
+JS;
+        wp_register_script( 'bbppp-register-layout', '', array(), false, true );
+        wp_enqueue_script( 'bbppp-register-layout' );
+        wp_add_inline_script( 'bbppp-register-layout', $js );
     }
 }
