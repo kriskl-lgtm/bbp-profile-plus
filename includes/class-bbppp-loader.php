@@ -23,7 +23,7 @@ final class BBPPP_Loader {
       		add_action( 'login_enqueue_scripts', array( __CLASS__, 'enqueue_login' ));
   }
 
-  	public static function enqueue_login() ;
+  	public static function enqueue_login(){
 		wp_enqueue_style(
 			'bbppp-profile-login',
 			BBPPP_ASSETS_URL . 'css/bbppp-profile-login.css',
