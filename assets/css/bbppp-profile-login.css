@@ -1,0 +1,110 @@
+/**
+ * BBPress Profile Plus - Login Page Styles
+ * Custom styling for WordPress login/registration pages
+ */
+
+/* Login Form Container */
+.login {
+	background: #f5f5f5;
+}
+
+#login {
+	width: 400px;
+	padding: 8% 0 0;
+	margin: auto;
+}
+
+/* Form Styling */
+.login form {
+	background: #ffffff;
+	border: 1px solid #ddd;
+	border-radius: 8px;
+	box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+	padding: 26px 24px;
+	margin-bottom: 20px;
+}
+
+/* Input Fields */
+.login input[type="text"],
+.login input[type="password"],
+.login input[type="email"] {
+	width: 100%;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+	padding: 10px;
+	font-size: 14px;
+	margin-bottom: 10px;
+	transition: border-color 0.3s;
+}
+
+.login input[type="text"]:focus,
+.login input[type="password"]:focus,
+.login input[type="email"]:focus {
+	border-color: #0073aa;
+	outline: none;
+	box-shadow: 0 0 0 1px #0073aa;
+}
+
+/* Labels */
+.login label {
+	color: #555;
+	font-size: 14px;
+	font-weight: 600;
+	margin-bottom: 5px;
+	display: block;
+}
+
+/* Submit Button */
+.login .button-primary {
+	width: 100%;
+	background: #0073aa;
+	border: none;
+	border-radius: 4px;
+	padding: 12px;
+	font-size: 16px;
+	font-weight: 600;
+	text-shadow: none;
+	box-shadow: none;
+	transition: background 0.3s;
+}
+
+.login .button-primary:hover {
+	background: #005177;
+}
+
+/* Links */
+.login a {
+	color: #0073aa;
+	text-decoration: none;
+	transition: color 0.3s;
+}
+
+.login a:hover {
+	color: #005177;
+}
+
+/* Messages */
+.login .message {
+	background: #e5f5fa;
+	border-left: 4px solid #00a0d2;
+	padding: 12px;
+	margin-bottom: 20px;
+	border-radius: 4px;
+}
+
+/* Error Messages */
+#login_error {
+	background: #fef7f1;
+	border-left: 4px solid #dc3232;
+	padding: 12px;
+	margin-bottom: 20px;
+	border-radius: 4px;
+}
+
+/* Responsive */
+@media screen and (max-width: 480px) {
+	#login {
+		width: 90%;
+		padding: 5% 0 0;
+	}
+}
