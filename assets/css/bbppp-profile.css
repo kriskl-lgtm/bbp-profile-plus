@@ -324,3 +324,59 @@
 
 /* On WP login page, reset to column layout since it's a narrow form */
 .login .bbppp-captcha-row { flex-direction: column; align-items: flex-start; gap: 6px; }
+
+/* ========================================
+   REGISTRATION FORM IMPROVEMENTS
+   ======================================== */
+
+/* Hide asterisks for required fields (all fields are required) */
+.login #registerform .required,
+.login #registerform .bbppp-req {
+	display: none;
+}
+
+/* Make all input fields same width */
+.login #registerform input[type="text"],
+.login #registerform input[type="email"],
+.login #registerform input[type="number"],
+.login #registerform select,
+.login #registerform textarea {
+	width: 100%;
+	max-width: 100%;
+	box-sizing: border-box;
+}
+
+/* Smaller, lighter labels */
+.login #registerform label {
+	font-size: 13px;
+	font-weight: 400;
+	color: #50575e;
+}
+
+/* Your Profile section heading */
+.login #registerform h3 {
+	font-size: 14px;
+	font-weight: 600;
+	margin: 20px 0 10px 0;
+	color: #1d2327;
+	padding-top: 10px;
+	border-top: 1px solid #ddd;
+}
+
+/* Two-column layout for xProfile fields on wider screens */
+@media (min-width: 768px) {
+	.login .bbppp-reg-group {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 15px;
+		margin: 15px 0;
+	}
+	
+	.login .bbppp-reg-group h3 {
+		grid-column: 1 / -1;
+	}
+	
+	.login .bbppp-reg-group .bbppp-form-row {
+		margin: 0;
+	}
+}
