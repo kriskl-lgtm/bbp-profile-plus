@@ -1,12 +1,12 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) exit;
 class BBPPP_Router {
-  private static $instance = null;
-  private $route   = null;
-  private $member  = null;
-  private $action  = 'view';
-  private $bp_pages = array();
-  private $is_bbppp = false;
+  	private static ?self $instance = null;
+  	private ?string $route  = null;
+  	private ?object $member = null;
+  	private string $action = 'view';
+  	private array $bp_pages = [];
+  	private bool $is_bbppp = false;
   const QV_MEMBER = 'bbppp_member';
   const QV_ACTION = 'bbppp_action';
   public static function instance() {
