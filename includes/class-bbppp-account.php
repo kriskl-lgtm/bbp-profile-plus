@@ -66,7 +66,6 @@ class BBPPP_Account {
 
     // --- Standard WP user fields ---
     if ( ! empty( $_POST['first_name'] ) ) $data['first_name']  = sanitize_text_field( $_POST['first_name'] );
-    if ( ! empty( $_POST['last_name'] ) )  $data['last_name']   = sanitize_text_field( $_POST['last_name'] );
     if ( ! empty( $_POST['user_email'] ) ) {
       $email = sanitize_email( $_POST['user_email'] );
       if ( ! is_email( $email ) ) wp_send_json_error( __( 'Invalid email address.', 'bbp-profile-plus' ) );
