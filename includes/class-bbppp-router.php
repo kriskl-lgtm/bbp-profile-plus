@@ -84,6 +84,17 @@ class BBPPP_Router {
   }
   public function redirects() {
     // Nothing required currently
+    		// Redirect /members/ to user's profile or registration
+		if ( is_page() && get_query_var( self::QV_MEMBER ) === '' && $_SERVER['REQUEST_URI'] === '/members/' ) {
+			if ( is_user_logged_in() ) {
+				$user = wp_get_current_user();
+				wp_safe_redirect( $this->member_url( $user ) );
+				exit;
+			} else {
+				wp_safe_redirect( wp_registration_url() );
+				exit;
+			}
+		}
   }
   public function get_route()    { return $this->route; }
   public function get_member()   { return $this->member; }
