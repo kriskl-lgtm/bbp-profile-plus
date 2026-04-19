@@ -11,11 +11,13 @@ final class BBPPP_Loader {
     require_once BBPPP_DIR . 'includes/class-bbppp-account.php';
     require_once BBPPP_DIR . 'includes/class-bbppp-router.php';
     require_once BBPPP_DIR . 'includes/class-bbppp-antispam.php';
+	  		require_once BBPPP_DIR . 'includes/class-bbppp-activation.php';
     // Boot singletons
     BBPPP_XProfile::instance();
     BBPPP_Account::instance();
     BBPPP_Router::instance();
     BBPPP_AntiSpam::instance();
+	  		BBPPP_Activation::instance();
     // Enqueue assets
     add_action( 'wp_enqueue_scripts', array( __CLASS__, 'enqueue' ) );
       		add_action( 'login_enqueue_scripts', array( __CLASS__, 'enqueue_login' ));
@@ -45,6 +47,10 @@ final class BBPPP_Loader {
       'bbppp-profile',
       BBPPP_ASSETS_URL . 'css/bbppp-profile.css',
       array(),
+
+				// Display activation messages on login/register pages
+		add_action( 'login_form', array( 'BBPPP_Activation', 'show_messages' ) );
+		add_action( 'register_form', array( 'BBPPP_Activation', 'show_messages' ) );
       BBPPP_VERSION
     );
     wp_enqueue_script(
